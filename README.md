@@ -1,5 +1,5 @@
 # opengl project based on the gloom boilerplate
-![screenshot] (https://raw.githubusercontent.com/Slhm/kaos/master/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/Slhm/kaos/master/screenshot.png)
 
 
 # gloom
