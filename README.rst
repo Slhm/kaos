@@ -1,8 +1,9 @@
+![screenshot] (https://raw.githubusercontent.com/Slhm/kaos/master/screenshot.png)
+
 =====
 gloom
 =====
 
-![screenshot](https://raw.githubusercontent.com/Slhm/kaos/master/screenshot.png)
 
 
 A minimalistic boilerplate for OpenGL with C++ derived from `Glitter`_. Its intended use is to get smaller OpenGL projects quickly up and running for the graphics courses at `NTNU`_.
