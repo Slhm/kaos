@@ -7,15 +7,40 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <string>
-
+#include "sceneGraph.hpp"
+#include "gloom/imageLoader.hpp"
+#include "gloom/camera.hpp"
 
 // Main OpenGL program
 void runProgram(GLFWwindow* window);
 
+//init program
+void initProg(GLFWwindow* window);
+
+//main loop
+void renderLoop(SceneNode* node);
+void updateFrame(GLFWwindow* window);
+void renderFrame(GLFWwindow* window);
+void updateNodeTransformations(SceneNode* node, glm::mat4 transformationThusFar);
+
+//For calculating the center of an object
+glm::vec3 calcCenter(std::vector<glm::vec3> vert);
+
+//calculate the distance between the center of view and an object.
+float calcViewDistance(glm::vec3 obj, glm::vec3 viewDir, glm::vec3 viewPos);
+
+// setup VAO for the model.
+unsigned int generateVAO(std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<uint> indices, std::vector<glm::vec2> textureCoordinates);
+
+//load texture
+GLuint loadTex(Image img);
+
+void setupKoalaNode(SceneNode* node, GLuint koalaTexID, GLuint koalaNormTexID, unsigned int vao, unsigned int is, glm::vec3 pos, glm::vec3 rot);
+
+void mouseFunc(GLFWwindow* window, double xpos, double ypos);
 
 // Function for handling keypresses
-void handleKeyboardInput(GLFWwindow* window);
-
+void handleKeyboardInput(GLFWwindow* window, SceneNode* node, Gloom::Camera* camera);
 
 // Checks for whether an OpenGL error occurred. If one did,
 // it prints out the error type and ID
