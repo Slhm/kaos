@@ -248,8 +248,11 @@ float calcViewDistance(glm::vec3 obj, glm::vec3 viewDir, glm::vec3 viewPos){
     if(dem < tooTiny){
         return 0;
     }
-
     float dot = glm::clamp(glm::dot(objView, dirView) / dem, -1.f, 1.f);
+
+    // devide by 3 to get it in range [0,1],
+    // multiply by negative 100 and add 100 to inverse it and make it 100 times larger.
+    // 5 is just a multiplier to make the triangles go crazier.
     float r = (glm::acos(dot)/3 * -100 + 100) * 5;
     //printf("r: %f\n", r);
 

@@ -1,10 +1,11 @@
 # opengl project based on the gloom boilerplate
 ![screenshot](https://raw.githubusercontent.com/Slhm/kaos/master/screenshot.png)
 
+demo: (20/4-2020)https://youtu.be/YmZ2oZszA6s
+
+Originally a project for TDT4230 at NTNU, but i will continue to work on it as it has potential to be pretty cool imo.
 
 # gloom
-
-
 
 
 A minimalistic boilerplate for OpenGL with C++ derived from _Glitter_. Its intended use is to get smaller OpenGL projects quickly up and running for the graphics courses at _NTNU_.
@@ -32,7 +33,7 @@ If you have already cloned the repository and missed the ``--recursive`` flag, t
 
 ```bash
 
-  git submodule update --init 
+  git submodule update --init
 ```
 
 ## Compilation
