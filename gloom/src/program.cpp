@@ -240,21 +240,21 @@ float calcViewDistance(glm::vec3 obj, glm::vec3 viewDir, glm::vec3 viewPos){
     float tooTiny = 0.0001f;
 
     glm::vec3 objView = glm::normalize(viewPos - obj);
-    glm::vec3 dirView = viewDir;
+    glm::vec3 dirView = glm::normalize(viewDir);
 
     //from https://github.com/Unity-Technologies/UnityCsReference/blob/3417c31e48410974acf40a2a461b31f9a49051ba/Runtime/Export/Math/Vector3.cs#L304
-    float dem = glm::sqrt((objView.x*objView.x + objView.y*objView.y+objView.z*objView.z) * (dirView.x*dirView.x+dirView.y*dirView.y+dirView.z*dirView.z));
+    //float dem = glm::sqrt((objView.x*objView.x + objView.y*objView.y+objView.z*objView.z) * (dirView.x*dirView.x+dirView.y*dirView.y+dirView.z*dirView.z));
 
     if(dem < tooTiny){
         return 0;
     }
-    float dot = glm::clamp(glm::dot(objView, dirView) / dem, -1.f, 1.f);
+    float dot = glm::clamp(glm::dot(objView, dirView), -1.f, 1.f);
 
     // devide by 3 to get it in range [0,1],
     // multiply by negative 100 and add 100 to inverse it and make it 100 times larger.
     // 5 is just a multiplier to make the triangles go crazier.
     float r = (glm::acos(dot)/3 * -100 + 100) * 5;
-    //printf("r: %f\n", r);
+    printf("dem: %f\n", dem);
 
     return r > 0 ? r : 0;
 }
