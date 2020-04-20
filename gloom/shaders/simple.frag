@@ -13,9 +13,13 @@ vec4 tex = texture(texture1, TexCoords);
 layout(binding = 1) uniform sampler2D nrmTex;
 vec4 nt = texture(nrmTex, TexCoords);
 
+//PHONG ILLUMINATION
+
+//ambient
 vec3 ambient = vec3(0.1, 0.1, 0.1);
 vec3 norm2 = normalize((nt.xyz * 2) - 1);
 
+//diffuse
 float d = length(L1.xyz - norm2) + length(L2.xyz - norm2);
 float atten = 1.0f / (0.008f + d * 0.009f + d * d * 0.0002f);
 vec3 ld1 = normalize(L1.xyz - surfNorm);

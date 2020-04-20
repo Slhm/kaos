@@ -57,8 +57,8 @@ void runProgram(GLFWwindow *window) {
 
 
     // Enable transparency
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //glfwSetCursorPosCallback(window, mouseFunc);
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -203,6 +203,7 @@ void initProg(GLFWwindow *window) {
     rootNode->children.push_back(lightNode);
     rootNode->children.push_back(lightNode2);
     rootNode->children.push_back(koalaNode);
+
     rootNode->children.push_back(koalaNode2);
     rootNode->children.push_back(koalaNode3);
     rootNode->children.push_back(koalaNode4);
@@ -236,40 +237,26 @@ glm::vec3 calcCenter(std::vector<glm::vec3> vert){
 }
 
 float calcViewDistance(glm::vec3 obj, glm::vec3 viewDir, glm::vec3 viewPos){
-
+    float tooTiny = 0.0001f;
 
     glm::vec3 objView = glm::normalize(viewPos - obj);
-    glm::vec3 dirView = glm::normalize(viewPos - viewDir);
-    //glm::vec3 objView = glm::normalize(obj) - glm::normalize(viewPos);
-    //glm::vec3 dirView = glm::normalize(viewDir) - glm::normalize(viewPos);
-    //glm::vec3 objView = glm::normalize(obj - viewPos);
-    //glm::vec3 dirView = glm::normalize(viewDir - viewPos);
-    //glm::vec3 normViewPos = glm::normalize(viewPos);
+    glm::vec3 dirView = viewDir;
 
-    //double x = atan2(static_cast<double>(glm::cross(objView, dirView)), glm::dot(objView, dirView));
-    float x = glm::acos(glm::dot(objView, dirView) / (glm::length(objView) * glm::length(dirView))); // * 180/3.14
-    //float x = glm::acos(glm::dot(objView, dirView));
-    //float x = glm::dot(objView, dirView);
+    //from https://github.com/Unity-Technologies/UnityCsReference/blob/3417c31e48410974acf40a2a461b31f9a49051ba/Runtime/Export/Math/Vector3.cs#L304
+    float dem = glm::sqrt((objView.x*objView.x + objView.y*objView.y+objView.z*objView.z) * (dirView.x*dirView.x+dirView.y*dirView.y+dirView.z*dirView.z));
 
-    //float c = glm::cross(objView, dirView);
+    if(dem < tooTiny){
+        return 0;
+    }
 
-    //printf("x: %f\n", x);
-    /*
-    printf("cos(x): %f\n", cos(x));
-    printf("viewPos: %f, %f, %f\n", viewPos.x, viewPos.y, viewPos.z);
-    printf("objPos: %f, %f, %f\n", obj.x, obj.y, obj.z);
-    printf("viewDir: %f, %f, %f\n", viewDir.x, viewDir.y, viewDir.z);
-    printf("objView: %f, %f, %f\n", objView.x, objView.y, objView.z);
-    printf("dirView: %f, %f, %f\n\n", dirView.x, dirView.y, dirView.z);
-    */
-    //float x = (viewPos.x + obj.x) - (viewPos.x + viewDir.x);
-    //float y = (viewPos.y + obj.y) - (viewPos.y + viewDir.y);
-    //float z = (viewPos.z + obj.z) - (viewPos.z + viewDir.z);
+    float dot = glm::clamp(glm::dot(objView, dirView) / dem, -1.f, 1.f);
+    float r = (glm::acos(dot)/3 * -100 + 100) * 5;
+    //printf("r: %f\n", r);
 
-    return abs(x);
-    //return abs((x + y + z) / 3);
-    //return abs((x + y + z) / 3) < 0.01 ?  0 : abs((x + y + z) / 3) - 0.01f;
+    return r > 0 ? r : 0;
 }
+
+
 
 
 

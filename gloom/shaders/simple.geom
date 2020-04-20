@@ -28,7 +28,7 @@ in VS_OUT{
 out vec2 TexCoords;
 
 vec4 explode(vec4 position, vec3 normal){
-    vec3 direction = normal * closeToViewCenter * 70;
+    vec3 direction = normal * closeToViewCenter;
     return position + vec4(direction, 0.0);
 }
 
@@ -57,4 +57,3 @@ void main(){
 
     EndPrimitive();
 }
- 
