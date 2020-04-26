@@ -5,6 +5,12 @@ demo: (20/4-2020)https://youtu.be/YmZ2oZszA6s
 
 Originally a project for TDT4230 at NTNU, but i will continue to work on it as it has potential to be pretty cool imo.
 
+## Credits:
+koala model: https://www.turbosquid.com/FullPreview/Index.cfm/ID/1438879
+
+tinyObjLoader: https://github.com/tinyobjloader/tinyobjloader
+
+"exploding triangles" guideline: https://learnopengl.com/Advanced-OpenGL/Geometry-Shader
 # gloom
 
 
