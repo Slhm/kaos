@@ -10,14 +10,25 @@
 #include <GLFW/glfw3.h>
 
 
+const float YAW         = -90.0f;
+const float PITCH       = 0.0f;
+const float SPEED       = 2.5f;
+const float SENSITIVITY = 0.1f;
+//bool wireframeMode = false;
+
 namespace Gloom
 {
     class Camera
     {
     public:
-        Camera(glm::vec3 position         = glm::vec3(0.0f, 2.0f, -20.0f),
-               GLfloat   movementSpeed    = 5.0f,
-               GLfloat   mouseSensitivity = 0.005f)
+
+        glm::vec3 Up;
+        glm::vec3 Right;
+
+        Camera(glm::vec3 position         = glm::vec3(0.0f, 0.0f, 0.0f),
+               GLfloat   movementSpeed    = 30.0f,
+               GLfloat   mouseSensitivity = 0.05f
+        )
         {
             cPosition         = position;
             cMovementSpeed    = movementSpeed;
@@ -31,6 +42,8 @@ namespace Gloom
 
         /* Getter for the view matrix */
         glm::mat4 getViewMatrix() { return matView; }
+        glm::vec3 getViewDir() { return cfront; }
+        glm::vec3 getCamPos() { return cPosition; }
 
 
         /* Handle keyboard inputs from a callback mechanism */
@@ -71,25 +84,32 @@ namespace Gloom
         /* Handle cursor position from a callback mechanism */
         void handleCursorPosInput(double xpos, double ypos)
         {
-            // Do nothing if the left mouse button is not pressed
-            if (isMousePressed == false)
-                return;
-
-            // There should be no movement when the mouse button is released
-            if (resetMouse)
-            {
-                lastXPos = xpos;
-                lastYPos = ypos;
-                resetMouse = false;
-            }
-
             // Keep track of pitch and yaw for the current frame
-            fYaw   = xpos - lastXPos;
-            fPitch = ypos - lastYPos;
+            float xOff  = 0;
+            float yOff = 0;
+            if (!firstMouse)
+            {
+                xOff  = xpos - lastXPos;
+                yOff = lastYPos - ypos;
+                firstMouse = false;
+            }
 
             // Update last known cursor position
             lastXPos = xpos;
             lastYPos = ypos;
+
+            // Adjust cursor movement using the specified sensitivity
+            xOff *= cMouseSensitivity;
+            yOff *= cMouseSensitivity;
+
+            fYaw += xOff;
+            fPitch += yOff;
+
+            // Caps the pitch hight at 90 deg.
+            if(fPitch > 89.0f) fPitch = 89.0f;
+            if(fPitch < -89.0f) fPitch = -89.0f;
+
+            updateViewMatrix();
         }
 
 
@@ -97,37 +117,42 @@ namespace Gloom
            `deltaTime` is the time between the current and last frame */
         void updateCamera(GLfloat deltaTime)
         {
-            // Extract movement information from the view matrix
-            glm::vec3 dirX(matView[0][0], matView[1][0], matView[2][0]);
-            glm::vec3 dirY(matView[0][1], matView[1][1], matView[2][1]);
-            glm::vec3 dirZ(matView[0][2], matView[1][2], matView[2][2]);
 
-            // Alter position in the appropriate direction
-            glm::vec3 fMovement(0.0f, 0.0f, 0.0f);
+            glm::vec3 move = glm::vec3(0);
+            if (keysInUse[GLFW_KEY_W]) {
+                move +=  glm::vec3(cfront.x, 0, cfront.z);
+            }
+            if (keysInUse[GLFW_KEY_S]) {
+                move -=  glm::vec3(cfront.x, 0, cfront.z);
+            }
+            if (keysInUse[GLFW_KEY_A]) {
+                move -=  glm::normalize(glm::cross(cfront, glm::vec3(0, 1, 0)));
+                move.y = 0;
+            }
+            if (keysInUse[GLFW_KEY_D]) {
+                move +=  glm::normalize(glm::cross(cfront, glm::vec3(0, 1, 0)));
+                move.y = 0;
+            }
+            if (keysInUse[GLFW_KEY_R]) {
+                cPosition = glm::vec3(0);
+            }
+            /*
+            if(keysInUse[GLFW_KEY_P]){
+                if(!wireframeMode) {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    wireframeMode = true;
+                }else{
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    wireframeMode = false;
+                }
 
-            if (keysInUse[GLFW_KEY_W])  // forward
-                fMovement -= dirZ;
-
-            if (keysInUse[GLFW_KEY_S])  // backward
-                fMovement += dirZ;
-
-            if (keysInUse[GLFW_KEY_A])  // left
-                fMovement -= dirX;
-
-            if (keysInUse[GLFW_KEY_D])  // right
-                fMovement += dirX;
-
-            if (keysInUse[GLFW_KEY_E])  // vertical up
-                fMovement += dirY;
-
-            if (keysInUse[GLFW_KEY_Q])  // vertical down
-                fMovement -= dirY;
-
+            }
+            */
             // Trick to balance PC speed with movement
             GLfloat velocity = cMovementSpeed * deltaTime;
 
             // Update camera position using the appropriate velocity
-            cPosition += fMovement * velocity;
+            cPosition += move * velocity;
 
             // Update the view matrix based on the new information
             updateViewMatrix();
@@ -143,30 +168,20 @@ namespace Gloom
         /* Update the view matrix based on the current information */
         void updateViewMatrix()
         {
-            // Adjust cursor movement using the specified sensitivity
-            fPitch *= cMouseSensitivity;
-            fYaw   *= cMouseSensitivity;
 
-            // Create quaternions given the current pitch and yaw
-            glm::quat qPitch = glm::quat(glm::vec3(fPitch, 0.0f, 0.0f));
-            glm::quat qYaw   = glm::quat(glm::vec3(0.0f, fYaw, 0.0f));
+            printf("yaw: %f, pitch: %f\n", fYaw, fPitch);
 
-            // Reset pitch and yaw values for the current rotation
-            fPitch = 0.0f;
-            fYaw   = 0.0f;
+            cfront.x = cos(glm::radians(fYaw)) * cos(glm::radians(fPitch));
+            cfront.y = sin(glm::radians(fPitch));
+            cfront.z = sin(glm::radians(fYaw)) * cos(glm::radians(fPitch));
+            cfront = glm::normalize(cfront);
 
-            // Update camera quaternion and normalise
-            cQuaternion = qYaw * qPitch * cQuaternion;
-            cQuaternion = glm::normalize(cQuaternion);
+            Right = glm::normalize(glm::cross(cfront, glm::vec3(0.0, 1.0, 0.0)));
+            Up = glm::normalize(glm::cross(Right, cfront));
 
-            // Build rotation matrix using the camera quaternion
-            glm::mat4 matRotation = glm::mat4_cast(cQuaternion);
-
-            // Build translation matrix
-            glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f), -cPosition);
 
             // Update view matrix
-            matView = matRotation * matTranslate;
+            matView = glm::lookAt(cPosition, cPosition + cfront, Up);
         }
 
         // Private member variables
@@ -176,17 +191,21 @@ namespace Gloom
         GLfloat fPitch = 0.0f;
         GLfloat fYaw   = 0.0f;
 
+        //front
+        glm::vec3 cfront;
+
         // Camera position
-        glm::vec3 cPosition;
+        glm::vec3 cPosition = glm::vec3(0.0);
 
         // Variables used for bookkeeping
         GLboolean resetMouse     = true;
+        bool firstMouse = false;
         GLboolean isMousePressed = false;
         GLboolean keysInUse[512];
 
         // Last cursor position
-        GLfloat lastXPos = 0.0f;
-        GLfloat lastYPos = 0.0f;
+        GLfloat lastXPos;
+        GLfloat lastYPos;
 
         // Camera settings
         GLfloat cMovementSpeed;

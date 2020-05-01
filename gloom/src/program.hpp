@@ -10,7 +10,7 @@
 #include "sceneGraph.hpp"
 #include "gloom/imageLoader.hpp"
 #include "gloom/camera.hpp"
-
+#include "gloom/mesh.h"
 // Main OpenGL program
 void runProgram(GLFWwindow* window);
 
@@ -30,18 +30,22 @@ glm::vec3 calcCenter(std::vector<glm::vec3> vert);
 float calcViewDistance(glm::vec3 obj, glm::vec3 viewDir, glm::vec3 viewPos);
 
 // setup VAO for the model.
-unsigned int generateVAO(std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<uint> indices, std::vector<glm::vec2> textureCoordinates);
+//unsigned int generateVAO(std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<uint> indices, std::vector<glm::vec2> textureCoordinates);
+unsigned int generateVAO(Mesh mesh);
+
 
 //load texture
 GLuint loadTex(Image img);
 
-void setupKoalaNode(SceneNode* node, GLuint koalaTexID, GLuint koalaNormTexID, unsigned int vao, unsigned int is, glm::vec3 pos, glm::vec3 rot);
+void setupNodeProp(SceneNode* node, GLuint koalaTexID, GLuint koalaNormTexID, unsigned int vao, unsigned int is, glm::vec3 pos, glm::vec3 rot);
 
 void mouseFunc(GLFWwindow* window, double xpos, double ypos);
+void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 
 // Function for handling keypresses
 void handleKeyboardInput(GLFWwindow* window, SceneNode* node, Gloom::Camera* camera);
-
+void cursorCallback(GLFWwindow* window, double xpos, double ypos);
 // Checks for whether an OpenGL error occurred. If one did,
 // it prints out the error type and ID
 inline void printGLError() {
