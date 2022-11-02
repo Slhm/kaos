@@ -1,9 +1,9 @@
-# opengl project based on the gloom boilerplate
+# opengl / geometry shader project
 ![screenshot](https://raw.githubusercontent.com/Slhm/kaos/master/screenshot.png)
 
 demo: (20/4-2020)https://youtu.be/YmZ2oZszA6s
 
-Originally a project for TDT4230 at NTNU, but i will continue to work on it as it has potential to be pretty cool imo.
+Made for the course TDT4230 at NTNU.
 
 ## Credits:
 koala model: https://www.turbosquid.com/FullPreview/Index.cfm/ID/1438879
